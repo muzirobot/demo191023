@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Select Menus with Price</title>
+    <style>
+        /* Added CSS for centering content */
+        body, html {
+            height: 100%;
+            margin: 0;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            text-align: left;
+        }
+    </style>
+    <script>
+        function updateSecondMenu() {
+            const firstSelect = document.getElementById('firstSelect');
+            const secondSelect = document.getElementById('secondSelect');
+            const selectedValue = firstSelect.value;
+
+            while (secondSelect.firstChild) {
+                secondSelect.removeChild(secondSelect.firstChild);
+            }
+
+            let options;
+            if (selectedValue === 'ZS') {
+                options = ['ZS-A', 'ZS-B', 'ZS-C'];
+            } else if (selectedValue === 'RS') {
+                options = ['RS-A', 'RS-B'];
+            }
+
+            if (options) {
+                options.forEach(option => {
+                    const optElement = document.createElement('option');
+                    optElement.value = option;
+                    optElement.textContent = option;
+                    secondSelect.appendChild(optElement);
+                });
+            }
+        }
+
+        function getPrice() {
+            const firstSelect = document.getElementById('firstSelect').value;
+            const secondSelect = document.getElementById('secondSelect').value;
+            const numberInputLength = parseFloat(document.getElementById('numberInputLength').value);
+            const numberInputWidth = parseFloat(document.getElementById('numberInputWidth').value);
+
+            let price = 0;
+            
+            if (firstSelect === 'ZS') {
+                if (secondSelect === 'ZS-A') price = 10;
+                else if (secondSelect === 'ZS-B') price = 20;
+                else if (secondSelect === 'ZS-C') price = 30;
+            } else if (firstSelect === 'RS') {
+                if (secondSelect === 'RS-A') price = 40;
+                else if (secondSelect === 'RS-B') price = 50;
+            }
+
+            const totalPrice = price * numberInputLength * numberInputWidth;
+            document.getElementById('priceOutput').textContent = "Total Price: $" + totalPrice.toFixed(2);
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <label for="firstSelect">First Selection:</label>
+        <select id="firstSelect" onchange="updateSecondMenu()">
+            <option value="ZS">ZS</option>
+            <option value="RS">RS</option>
+        </select>
+        <br>
+        <br>
+
+        <label for="secondSelect">Second Selection:</label>
+        <select id="secondSelect"></select>
+        <br>
+        <br>
+
+        <label for="numberInputLength">Enter Length:</label>
+        <input type="number" id="numberInputLength">
+        <br>
+        <br>
+
+        <label for="numberInputWidth">Enter Width:</label>
+        <input type="number" id="numberInputWidth">
+        <br>
+        <br>
+
+        <button onclick="getPrice()">Get the Price</button>
+        <br>
+        <br>
+
+        <div id="priceOutput"></div>
+        <br>
+
+        <script>
+            // Initial population of the second menu
+            updateSecondMenu();
+        </script>
+    </div>
+</body>
+</html>
