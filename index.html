@@ -3,107 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Select Menus with Price</title>
+    <title>Quote Cal 19</title>
     <style>
-        /* Added CSS for centering content */
         body, html {
             height: 100%;
             margin: 0;
-        }
-        body {
             display: flex;
             justify-content: center;
             align-items: center;
         }
+
         .container {
-            text-align: left;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        select, input, button {
+            margin: 5px 0; /* Margin for spacing out elements */
+            width: 80%; /* Set a width or max-width for better control */
+            max-width: 300px; /* You can set a max-width if needed */
+        }
+
+        #response {
+            margin-top: 10px;
+            text-align: center;
         }
     </style>
     <script>
-        function updateSecondMenu() {
-            const firstSelect = document.getElementById('firstSelect');
-            const secondSelect = document.getElementById('secondSelect');
-            const selectedValue = firstSelect.value;
-
-            while (secondSelect.firstChild) {
-                secondSelect.removeChild(secondSelect.firstChild);
-            }
-
-            let options;
-            if (selectedValue === 'ZS') {
-                options = ['ZS-A', 'ZS-B', 'ZS-C'];
-            } else if (selectedValue === 'RS') {
-                options = ['RS-A', 'RS-B'];
-            }
-
-            if (options) {
-                options.forEach(option => {
-                    const optElement = document.createElement('option');
-                    optElement.value = option;
-                    optElement.textContent = option;
-                    secondSelect.appendChild(optElement);
-                });
-            }
-        }
-
-        function getPrice() {
-            const firstSelect = document.getElementById('firstSelect').value;
-            const secondSelect = document.getElementById('secondSelect').value;
-            const numberInputLength = parseFloat(document.getElementById('numberInputLength').value);
-            const numberInputWidth = parseFloat(document.getElementById('numberInputWidth').value);
-
-            let price = 0;
-            
-            if (firstSelect === 'ZS') {
-                if (secondSelect === 'ZS-A') price = 10;
-                else if (secondSelect === 'ZS-B') price = 20;
-                else if (secondSelect === 'ZS-C') price = 30;
-            } else if (firstSelect === 'RS') {
-                if (secondSelect === 'RS-A') price = 40;
-                else if (secondSelect === 'RS-B') price = 50;
-            }
-
-            const totalPrice = price * numberInputLength * numberInputWidth;
-            document.getElementById('priceOutput').textContent = "Total Price: $" + totalPrice.toFixed(2);
-        }
+        // JavaScript to fetch and populate data will go here
     </script>
 </head>
 <body>
-    <div class="container">
-        <label for="firstSelect">First Selection:</label>
-        <select id="firstSelect" onchange="updateSecondMenu()">
-            <option value="ZS">ZS</option>
-            <option value="RS">RS</option>
-        </select>
-        <br>
-        <br>
-
-        <label for="secondSelect">Second Selection:</label>
-        <select id="secondSelect"></select>
-        <br>
-        <br>
-
-        <label for="numberInputLength">Enter Length:</label>
-        <input type="number" id="numberInputLength">
-        <br>
-        <br>
-
-        <label for="numberInputWidth">Enter Width:</label>
-        <input type="number" id="numberInputWidth">
-        <br>
-        <br>
-
-        <button onclick="getPrice()">Get the Price</button>
-        <br>
-        <br>
-
-        <div id="priceOutput"></div>
-        <br>
-
-        <script>
-            // Initial population of the second menu
-            updateSecondMenu();
-        </script>
+    <div class="container"> <!-- Container to hold the content -->
+    <select id="menu1"></select>
+    <select id="menu2"></select>
+    <input type="text" id="input3" placeholder="Enter height" />
+    <input type="text" id="input4" placeholder="Enter width" />
+    <button onclick="sendDataToLambda()">Get the price</button>
+    <p id="response"></p>
     </div>
+
+    <script>
+// Initialize resselection with pre-defined properties
+let resselection = {
+    firstString: ' ',
+    secondString: ' ',
+    thirdString: ' ',
+    fourthString: ' '
+};
+
+window.onload = function() {
+    let menu1Selection = null;
+
+    fetch('https://pu14ug6ii9.execute-api.us-east-2.amazonaws.com/default/digixp_231030_x')
+        .then(response => response.json())
+        .then(data => {
+            const menu1 = document.getElementById('menu1');
+            const menu2 = document.getElementById('menu2');
+
+            // Populate the menu1 with the received data
+            data.menu1.forEach(item => {
+                const option = new Option(item, item); // Simplified option creation
+                menu1.add(option);
+            });
+
+            // Event listener for menu1 to update menu2 based on the selection
+            menu1.addEventListener('change', function() {
+                menu1Selection = this.value;
+                // Fetch the options for menu2 based on menu1 selection
+                fetchMenu2Options(menu1Selection);
+
+                // Update resselection object
+                resselection.firstString = this.value;
+                console.log(resselection);
+            });
+
+            function fetchMenu2Options(selection) {
+                // Clear existing options
+                menu2.innerHTML = '';
+                // Populate the menu2 with options dependent on menu1 selection
+                (data.dependentOptions[selection] || []).forEach(item => {
+                    const option = new Option(item, item);
+                    menu2.add(option);
+                });
+            }
+
+            // Add an event listener to update the resselection variable for menu2
+            menu2.addEventListener('change', function() {
+                resselection.secondString = this.value;
+                console.log(resselection);
+            });
+
+            // Initialize menu2 with options dependent on the first available selection in menu1
+            if (data.menu1.length > 0) {
+                fetchMenu2Options(data.menu1[0]);
+            }
+        });
+};
+
+
+
+    function sendDataToLambda() {
+
+    resselection.thirdString = document.getElementById('input3').value;
+    resselection.fourthString = document.getElementById('input4').value;
+    //
+    fetch('https://g6a6uagj29.execute-api.us-east-2.amazonaws.com/default/digixp_231030_x_1', {
+      method: 'POST',
+     
+      body: JSON.stringify(resselection), // 
+    })
+    .then(response => response.json()) // 
+    .then(data => {
+      // 
+      document.getElementById('response').innerText = data.combinedString;
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+  }
+      
+    </script>
 </body>
 </html>
+
