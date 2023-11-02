@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quote Cal 19</title>
+    <title>Quote Cal 20</title>
     <style>
         body, html {
             height: 100%;
@@ -41,7 +41,12 @@
     <input type="text" id="input3" placeholder="Enter height" />
     <input type="text" id="input4" placeholder="Enter width" />
     <button onclick="sendDataToLambda()">Get the price</button>
+    <button onclick="startNextSelection()">Start Next Selection</button>
     <p id="response"></p>
+    <button onclick="sumPrices()">Sum All Prices</button>
+    <div id="response"></div>
+    <div id="totalPrice">Total Price: 0</div>
+    <button onclick="resetForm()">Start New Selection</button>
     </div>
 
     <script>
@@ -102,8 +107,6 @@ window.onload = function() {
         });
 };
 
-
-
     function sendDataToLambda() {
 
     resselection.thirdString = document.getElementById('input3').value;
@@ -117,14 +120,88 @@ window.onload = function() {
     .then(response => response.json()) // 
     .then(data => {
       // 
-      document.getElementById('response').innerText = data.combinedString;
+        let currentResponse = document.getElementById('response').innerHTML;
+          //  let newResponse = `<p>${data.combinedString}</p>`;
+        let newResponse = `<p class="price-quote">${data.combinedString}</p>`;
+
+    //  document.getElementById('response').innerText = data.combinedString;
+        document.getElementById('response').innerHTML = currentResponse + newResponse;
     })
     .catch((error) => {
       console.error('Error:', error);
     });
   }
-      
-    </script>
+        function startNextSelection() {
+        // Clear current selections and inputs
+        document.getElementById('menu1').selectedIndex = 0;
+        document.getElementById('menu2').selectedIndex = 0;
+        document.getElementById('input3').value = '';
+        document.getElementById('input4').value = '';
+
+        // Optionally, if you want to also clear the previous response, you can uncomment the next line
+        // document.getElementById('response').innerHTML = '';
+
+        // Update resselection to start fresh
+        resselection.firstString = ' ';
+        resselection.secondString = ' ';
+        resselection.thirdString = ' ';
+        resselection.fourthString = ' ';
+
+        // Initiate a new fetch to update the second menu based on the default (first) selection of the first menu
+        // This assumes that you have a function like fetchMenu2Options as per your existing onload event
+        // fetchMenu2Options(document.getElementById('menu1').value); // Uncomment if needed
+    }
+function sumPrices() {
+            let responses = document.querySelectorAll('#response p');
+            let totalPrice = 0;
+
+            responses.forEach((response) => {
+                // Extract price from the paragraph content
+                let priceText = response.textContent || response.innerText;
+                let matches = priceText.match(/Total price: (\d+) CAD/);
+                if (matches && matches[1]) {
+                    totalPrice += parseInt(matches[1], 10);
+                }
+            });
+
+            // Display the total price
+            document.getElementById('totalPrice').innerText = 'Total Price: ' + totalPrice + ' CAD';
+        }
+function resetForm() {
+    // Clear the selection fields
+    document.getElementById('menu1').selectedIndex = 0;
+    document.getElementById('menu2').selectedIndex = 0;
+    document.getElementById('input3').value = '';
+    document.getElementById('input4').value = '';
+
+    // Clear the response display
+    document.getElementById('response').innerHTML = '';
+    
+    // Clear the total price if needed
+    document.getElementById('totalPrice').innerText = 'Total Price: 0';
+
+    // Reset the resselection object
+    resselection.firstString = ' ';
+    resselection.secondString = ' ';
+    resselection.thirdString = ' ';
+    resselection.fourthString = ' ';
+
+    // If needed, also reinitialize the menus (depends on your application logic)
+    // initializeMenus();
+}
+
+// Optional: Add this function if you need to re-fetch the initial options for your select menus.
+// This would replace your existing window.onload initialization.
+function initializeMenus() {
+    fetch('https://pu14ug6ii9.execute-api.us-east-2.amazonaws.com/default/digixp_231030_x')
+        .then(response => response.json())
+        .then(data => {
+            // ... (existing code to populate menus)
+        });
+}
+
+        
+</script>
 </body>
 </html>
 
