@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quote Cal 20</title>
+    <title>Quote Cal 21</title>
     <style>
         body, html {
             height: 100%;
@@ -158,7 +158,7 @@ function sumPrices() {
             responses.forEach((response) => {
                 // Extract price from the paragraph content
                 let priceText = response.textContent || response.innerText;
-                let matches = priceText.match(/Total price: (\d+) CAD/);
+                let matches = priceText.match(/Price: (\d+) CAD/);
                 if (matches && matches[1]) {
                     totalPrice += parseInt(matches[1], 10);
                 }
