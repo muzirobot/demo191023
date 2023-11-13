@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quote Cal 25</title>
+    <title>Quote Cal 23 test</title>
     <style>
         body, html {
             height: 100%;
@@ -29,11 +29,30 @@
             width: 80%; /* Set a width or max-width for better control */
             max-width: 300px; /* You can set a max-width if needed */
         }
-
         #response {
             margin-top: 10px;
             text-align: center;
+            border: 1px solid #ccc; /* Add a border */
+            padding: 10px; /* Add some padding */
+            box-shadow: 0px 0px 5px #ccc; /* Optional: Add a shadow for better visibility */
+            width: 80%; /* Control the width of the box */
+            max-width: 300px; /* Set a maximum width if required */
+            overflow: auto; /* To handle overflow of content */
         }
+                #totalPrice {
+            margin-top: 10px;
+            text-align: center;
+            border: 1px solid #ccc; /* Add a border */
+            padding: 10px; /* Add some padding */
+            box-shadow: 0px 0px 5px #ccc; /* Optional: Add a shadow for better visibility */
+            width: 80%; /* Control the width of the box */
+            max-width: 300px; /* Set a maximum width if required */
+            overflow: auto; /* To handle overflow of content */
+        }
+    //    #response {
+    //        margin-top: 10px;
+    //        text-align: center;
+    //    }
     </style>
 
 </head>
@@ -41,17 +60,22 @@
     
 <body>
     <div class="container"> <!-- Container to hold the content -->
+    <p> Input product and group, height and width of your window, number of your window with same blinds: </p>
     <select id="menu1"></select>
     <select id="menu2"></select>
     <input type="text" id="input3" placeholder="Enter height" />
     <input type="text" id="input4" placeholder="Enter width" />
     <input type="text" id="input5" placeholder="Enter number" />
     <button onclick="sendDataToLambda()">Get the price</button>
-    <button onclick="startNextSelection()">Add Another Selection</button>
     <p id="response"></p>
+    <p> Start a new selection if you have more window: </p>
+    <button onclick="startNextSelection()">Add Another Selection</button>
+    <p> </p>
     <button onclick="sumPrices()">Sum All Prices</button>
-    <div id="response"></div>
+    <div id="responsexy"></div>
     <div id="totalPrice">Total Price: 0</div>
+    <p> </p>
+    <p> Clear all selection </p>
     <button onclick="resetForm()">Clear Selection</button>
     </div>
 
@@ -129,7 +153,7 @@ window.onload = function() {
     .then(data => {
       // 
         let currentResponse = document.getElementById('response').innerHTML;
-        let newResponse = `<p class="price-quote">${data.combinedString} <button onclick="deletePriceQuote(this)">Delete</button></p>`;
+        let newResponse = `<p class="price-quote">${data.combinedString} <button onclick="deletePriceQuote(this)">Delete this item</button></p>`;
         document.getElementById('response').innerHTML = currentResponse + newResponse;
     })
     .catch((error) => {
