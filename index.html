@@ -86,7 +86,7 @@ let resselection = {
     secondString: ' ',
     thirdString: ' ',
     fourthString: ' ',
-    fifthString: '1'
+    fifthString: ' '
 };
 
 window.onload = function() {
@@ -166,7 +166,7 @@ window.onload = function() {
         document.getElementById('menu2').selectedIndex = 0;
         document.getElementById('input3').value = '';
         document.getElementById('input4').value = '';
-        document.getElementById('input5').value = '1';
+        document.getElementById('input5').value = '';
 
         // Optionally, if you want to also clear the previous response, you can uncomment the next line
         // document.getElementById('response').innerHTML = '';
@@ -176,7 +176,7 @@ window.onload = function() {
         resselection.secondString = ' ';
         resselection.thirdString = ' ';
         resselection.fourthString = ' ';
-        resselection.fifthString = '1';
+        resselection.fifthString = ' ';
 
         // Initiate a new fetch to update the second menu based on the default (first) selection of the first menu
         // This assumes that you have a function like fetchMenu2Options as per your existing onload event
@@ -211,7 +211,7 @@ function resetForm() {
     document.getElementById('menu2').selectedIndex = 0;
     document.getElementById('input3').value = '';
     document.getElementById('input4').value = '';
-    document.getElementById('input5').value = '1';
+    document.getElementById('input5').value = '';
 
     // Clear the response display
     document.getElementById('response').innerHTML = '';
@@ -224,7 +224,7 @@ function resetForm() {
     resselection.secondString = ' ';
     resselection.thirdString = ' ';
     resselection.fourthString = ' ';
-    resselection.fifthString = '1';
+    resselection.fifthString = ' ';
 
     // If needed, also reinitialize the menus (depends on your application logic)
     // initializeMenus();
