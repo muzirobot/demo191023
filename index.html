@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quote Cal 21</title>
+    <title>Quote Cal 25</title>
     <style>
         body, html {
             height: 100%;
@@ -11,12 +11,17 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            overflow: hidden;
         }
 
         .container {
             display: flex;
             flex-direction: column;
             align-items: center;
+            overflow-x: hidden;
+            overflow-y: auto;
+            max-height: 90%;
+            width: 100vw;
         }
 
         select, input, button {
@@ -30,16 +35,17 @@
             text-align: center;
         }
     </style>
-    <script>
-        // JavaScript to fetch and populate data will go here
-    </script>
+
 </head>
+
+    
 <body>
     <div class="container"> <!-- Container to hold the content -->
     <select id="menu1"></select>
     <select id="menu2"></select>
     <input type="text" id="input3" placeholder="Enter height" />
     <input type="text" id="input4" placeholder="Enter width" />
+    <input type="text" id="input5" placeholder="Enter number" />
     <button onclick="sendDataToLambda()">Get the price</button>
     <button onclick="startNextSelection()">Add Another Selection</button>
     <p id="response"></p>
@@ -55,7 +61,8 @@ let resselection = {
     firstString: ' ',
     secondString: ' ',
     thirdString: ' ',
-    fourthString: ' '
+    fourthString: ' ',
+    fifthString: ' '
 };
 
 window.onload = function() {
@@ -111,20 +118,18 @@ window.onload = function() {
 
     resselection.thirdString = document.getElementById('input3').value;
     resselection.fourthString = document.getElementById('input4').value;
+    resselection.fifthString = document.getElementById('input5').value;
+        
     //
     fetch('https://g6a6uagj29.execute-api.us-east-2.amazonaws.com/default/digixp_231030_x_1', {
       method: 'POST',
-     
       body: JSON.stringify(resselection), // 
     })
     .then(response => response.json()) // 
     .then(data => {
       // 
         let currentResponse = document.getElementById('response').innerHTML;
-          //  let newResponse = `<p>${data.combinedString}</p>`;
-        let newResponse = `<p class="price-quote">${data.combinedString}</p>`;
-
-    //  document.getElementById('response').innerText = data.combinedString;
+        let newResponse = `<p class="price-quote">${data.combinedString} <button onclick="deletePriceQuote(this)">Delete</button></p>`;
         document.getElementById('response').innerHTML = currentResponse + newResponse;
     })
     .catch((error) => {
@@ -137,6 +142,7 @@ window.onload = function() {
         document.getElementById('menu2').selectedIndex = 0;
         document.getElementById('input3').value = '';
         document.getElementById('input4').value = '';
+        document.getElementById('input5').value = '';
 
         // Optionally, if you want to also clear the previous response, you can uncomment the next line
         // document.getElementById('response').innerHTML = '';
@@ -146,6 +152,7 @@ window.onload = function() {
         resselection.secondString = ' ';
         resselection.thirdString = ' ';
         resselection.fourthString = ' ';
+        resselection.fifthString = ' ';
 
         // Initiate a new fetch to update the second menu based on the default (first) selection of the first menu
         // This assumes that you have a function like fetchMenu2Options as per your existing onload event
@@ -167,12 +174,20 @@ function sumPrices() {
             // Display the total price
             document.getElementById('totalPrice').innerText = 'Total Price: ' + totalPrice + ' CAD';
         }
+
+function deletePriceQuote(button) {
+    // Remove the parent paragraph of the clicked button
+    button.parentElement.remove();
+    sumPrices(); // Update the total price after deletion
+}
+        
 function resetForm() {
     // Clear the selection fields
     document.getElementById('menu1').selectedIndex = 0;
     document.getElementById('menu2').selectedIndex = 0;
     document.getElementById('input3').value = '';
     document.getElementById('input4').value = '';
+    document.getElementById('input5').value = '';
 
     // Clear the response display
     document.getElementById('response').innerHTML = '';
@@ -185,6 +200,7 @@ function resetForm() {
     resselection.secondString = ' ';
     resselection.thirdString = ' ';
     resselection.fourthString = ' ';
+    resselection.fifthString = ' ';
 
     // If needed, also reinitialize the menus (depends on your application logic)
     // initializeMenus();
