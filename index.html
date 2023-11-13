@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quote Cal 25 test</title>
+    <title>Quote Cal 26 test</title>
     <style>
         body, html {
             height: 100%;
@@ -73,7 +73,7 @@
     <p> </p>
     <button onclick="sumPrices()">Sum all prices</button>
     <div id="responsexy"></div>
-    <div id="totalPrice">Total price: 0</div>
+    <div id="totalPrice">Total price: </div>
     <p> </p>
     <p> </p>
     <button onclick="resetForm()">Clear all selection</button>
@@ -142,8 +142,15 @@ window.onload = function() {
 
     resselection.thirdString = document.getElementById('input3').value;
     resselection.fourthString = document.getElementById('input4').value;
-    resselection.fifthString = document.getElementById('input5').value;
-        
+   // resselection.fifthString = document.getElementById('input5').value;
+
+    let input5Value = document.getElementById('input5').value;
+    // Check if input5 is empty, if yes, set it to 1
+    if (input5Value.trim() === '') {
+        input5Value = '1';
+    }
+    resselection.fifthString = input5Value;
+            
     //
     fetch('https://g6a6uagj29.execute-api.us-east-2.amazonaws.com/default/digixp_231030_x_1', {
       method: 'POST',
