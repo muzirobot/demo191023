@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quote Cal 26 test</title>
+    <title>Quote Cal 29 test</title>
     <style>
         body, html {
             height: 100%;
@@ -36,10 +36,10 @@
             padding: 10px; /* Add some padding */
             box-shadow: 0px 0px 5px #ccc; /* Optional: Add a shadow for better visibility */
             width: 80%; /* Control the width of the box */
-            max-width: 300px; /* Set a maximum width if required */
-            overflow: auto; /* To handle overflow of content */
+            max-width: 400px; /* Set a maximum width if required */
+            overflow: visible; 
         }
-                #totalPrice {
+        #totalPrice {
             margin-top: 10px;
             text-align: center;
             border: 1px solid #ccc; /* Add a border */
@@ -47,8 +47,19 @@
             box-shadow: 0px 0px 5px #ccc; /* Optional: Add a shadow for better visibility */
             width: 80%; /* Control the width of the box */
             max-width: 300px; /* Set a maximum width if required */
-            overflow: auto; /* To handle overflow of content */
+            overflow: visible; /* To handle overflow of content */
         }
+        #discountedPrice {
+            margin-top: 10px;
+            text-align: center;
+            border: 1px solid #ccc; /* Add a border */
+            padding: 10px; /* Add some padding */
+            box-shadow: 0px 0px 5px #ccc; /* Optional: Add a shadow for better visibility */
+            width: 80%; /* Control the width of the box */
+            max-width: 300px; /* Set a maximum width if required */
+            overflow: visible; /* To handle overflow of content */
+        }
+
     //    #response {
     //        margin-top: 10px;
     //        text-align: center;
@@ -60,23 +71,29 @@
     
 <body>
     <div class="container"> <!-- Container to hold the content -->
-    <p> Please select product and group, input height and width of your window, number of your window with same blinds: </p>
+    <p> Please select product and group, input height and width of your window, number of your window with same blinds </p>
     <select id="menu1"></select>
     <select id="menu2"></select>
-    <input type="text" id="input3" placeholder="Enter height" />
-    <input type="text" id="input4" placeholder="Enter width" />
+    <input type="text" id="input3" placeholder="Enter width" />
+    <input type="text" id="input4" placeholder="Enter height" />
     <input type="text" id="input5" placeholder="Enter number" />
     <button onclick="sendDataToLambda()">Get the price</button>
-    <p id="response"></p>
-    <p> Start a new selection if you have more window: </p>
+    <p id="response" ></p>
+    <p> Start a new selection if you have more window </p>
     <button onclick="startNextSelection()">Add another selection</button>
     <p> </p>
+    <p> _______________________________________________ </p>
+    <p> Get the total price if you complete all inputs </p>
     <button onclick="sumPrices()">Sum all prices</button>
     <div id="responsexy"></div>
     <div id="totalPrice">Total price: </div>
+    <p> Please input the discount (e.g., input 10 if the discount is 10%) </p>
+    <input type="text" id="discountInput" placeholder="Enter discount" />
+    <button onclick="calculateDiscountedPrice()">Get the discounted price</button>
+    <div id="discountedPrice"></div>
     <p> </p>
-    <p> </p>
-    <button onclick="resetForm()">Clear all selection</button>
+    <p> _______________________________________________ </p>
+    <button onclick="resetForm()">Clear all selection and price</button>
     </div>
 
     <script>
@@ -205,8 +222,28 @@ function sumPrices() {
             // Display the total price
             document.getElementById('totalPrice').innerText = 'Total Price: ' + totalPrice + ' CAD';
         }
+function calculateDiscountedPrice() {
+    let totalPriceElement = document.getElementById('totalPrice');
+    let discountInput = document.getElementById('discountInput').value;
+    let disc = isNaN(parseFloat(discountInput)) ? 0 : parseFloat(discountInput);
+    
+    // Extract total price value
+    let totalPriceText = totalPriceElement.innerText;
+    let matches = totalPriceText.match(/Total Price: (\d+)/);
+    let totalPrice = matches ? parseInt(matches[1], 10) : 0;
+
+    // Calculate discounted price
+    let discountedPrice = totalPrice * (1 - disc * 0.01);
+    
+    // Display the discounted price
+    document.getElementById('discountedPrice').innerText = 'Discounted Price: ' + discountedPrice.toFixed(2) + ' CAD';
+}
+
 
 function deletePriceQuote(button) {
+    button.style.height = '20px'; // Example size, adjust as needed
+    button.style.width = '10px'; // Example size, adjust as needed
+    
     // Remove the parent paragraph of the clicked button
     button.parentElement.remove();
     sumPrices(); // Update the total price after deletion
@@ -219,12 +256,15 @@ function resetForm() {
     document.getElementById('input3').value = '';
     document.getElementById('input4').value = '';
     document.getElementById('input5').value = '';
+    document.getElementById('discountInput').value = '';
 
     // Clear the response display
     document.getElementById('response').innerHTML = '';
     
     // Clear the total price if needed
     document.getElementById('totalPrice').innerText = 'Total Price: 0';
+
+    document.getElementById('discountedPrice').innerText = 'Discounted Price: 0';
 
     // Reset the resselection object
     resselection.firstString = ' ';
