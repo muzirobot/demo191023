@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quote Cal 29 test</title>
+    <title>Quote Cal 31 test</title>
     <style>
         body, html {
             height: 100%;
@@ -77,6 +77,14 @@
     <input type="text" id="input3" placeholder="Enter width" />
     <input type="text" id="input4" placeholder="Enter height" />
     <input type="text" id="input5" placeholder="Enter number" />
+
+    <div id="additionalMenus" style="display: none;">
+    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+        <select id="menu3" style="margin-right: 10px;"></select>
+        <input type="text" id="input6" placeholder="Enter width" />
+    </div>
+    </div>
+
     <button onclick="sendDataToLambda()">Get the price</button>
     <p id="response" ></p>
     <p> Start a new selection if you have more window </p>
@@ -103,9 +111,13 @@ let resselection = {
     secondString: ' ',
     thirdString: ' ',
     fourthString: ' ',
-    fifthString: ' '
+    fifthString: ' ',
+    sixthString: ' ',
+    seventhString: ' '
 };
 
+
+        
 window.onload = function() {
     let menu1Selection = null;
 
@@ -114,6 +126,7 @@ window.onload = function() {
         .then(data => {
             const menu1 = document.getElementById('menu1');
             const menu2 = document.getElementById('menu2');
+            const menu3 = document.getElementById('menu3');
 
             // Populate the menu1 with the received data
             data.menu1.forEach(item => {
@@ -124,6 +137,16 @@ window.onload = function() {
             // Event listener for menu1 to update menu2 based on the selection
             menu1.addEventListener('change', function() {
                 menu1Selection = this.value;
+
+                // Show additional menus if 'RB' is selected
+                if (menu1Selection === 'RB') {
+                    document.getElementById('additionalMenus').style.display = 'block';
+                    fetchMenu3Options(menu1Selection);
+                    
+                } else {
+                    document.getElementById('additionalMenus').style.display = 'none';
+                }
+                
                 // Fetch the options for menu2 based on menu1 selection
                 fetchMenu2Options(menu1Selection);
 
@@ -142,15 +165,33 @@ window.onload = function() {
                 });
             }
 
+            // Function to fetch and populate menu3 options
+            function fetchMenu3Options(selection) {
+                // Clear existing options
+                menu3.innerHTML = '';
+                // Populate the menu3 with options dependent on menu1 selection
+                (data.dependentOptionsx0[selection] || []).forEach(item => {
+                    const option = new Option(item, item);
+                    menu3.add(option);
+                });
+            }
+
             // Add an event listener to update the resselection variable for menu2
             menu2.addEventListener('change', function() {
                 resselection.secondString = this.value;
                 console.log(resselection);
             });
-
+            
+            // Add an event listener to update the resselection variable for menu3
+            menu3.addEventListener('change', function() {
+                resselection.sixthString = this.value;
+                console.log(resselection);
+            });
+            
             // Initialize menu2 with options dependent on the first available selection in menu1
             if (data.menu1.length > 0) {
                 fetchMenu2Options(data.menu1[0]);
+                fetchMenu3Options(data.menu1[0]);
             }
         });
 };
@@ -159,7 +200,6 @@ window.onload = function() {
 
     resselection.thirdString = document.getElementById('input3').value;
     resselection.fourthString = document.getElementById('input4').value;
-   // resselection.fifthString = document.getElementById('input5').value;
 
     let input5Value = document.getElementById('input5').value;
     // Check if input5 is empty, if yes, set it to 1
@@ -167,6 +207,9 @@ window.onload = function() {
         input5Value = '1';
     }
     resselection.fifthString = input5Value;
+
+    resselection.seventhString = document.getElementById('input6').value;
+
             
     //
     fetch('https://g6a6uagj29.execute-api.us-east-2.amazonaws.com/default/digixp_231030_x_1', {
@@ -184,6 +227,7 @@ window.onload = function() {
       console.error('Error:', error);
     });
   }
+        
         function startNextSelection() {
         // Clear current selections and inputs
         document.getElementById('menu1').selectedIndex = 0;
@@ -191,6 +235,10 @@ window.onload = function() {
         document.getElementById('input3').value = '';
         document.getElementById('input4').value = '';
         document.getElementById('input5').value = '';
+
+        document.getElementById('additionalMenus').style.display = 'none';
+        document.getElementById('menu3').selectedIndex = 0;
+        document.getElementById('input6').value = '';
 
         // Optionally, if you want to also clear the previous response, you can uncomment the next line
         // document.getElementById('response').innerHTML = '';
@@ -202,10 +250,12 @@ window.onload = function() {
         resselection.fourthString = ' ';
         resselection.fifthString = ' ';
 
+
         // Initiate a new fetch to update the second menu based on the default (first) selection of the first menu
         // This assumes that you have a function like fetchMenu2Options as per your existing onload event
         // fetchMenu2Options(document.getElementById('menu1').value); // Uncomment if needed
     }
+        
 function sumPrices() {
             let responses = document.querySelectorAll('#response p');
             let totalPrice = 0;
@@ -217,11 +267,16 @@ function sumPrices() {
                 if (matches && matches[1]) {
                     totalPrice += parseInt(matches[1], 10);
                 }
+                let addPriceMatch = priceText.match(/ and (\d+) CAD /);
+                if (addPriceMatch && addPriceMatch[1]) {
+                    totalPrice += parseInt(addPriceMatch[1], 10);
+                }
             });
-
+    
             // Display the total price
             document.getElementById('totalPrice').innerText = 'Total Price: ' + totalPrice + ' CAD';
         }
+        
 function calculateDiscountedPrice() {
     let totalPriceElement = document.getElementById('totalPrice');
     let discountInput = document.getElementById('discountInput').value;
@@ -272,6 +327,14 @@ function resetForm() {
     resselection.thirdString = ' ';
     resselection.fourthString = ' ';
     resselection.fifthString = ' ';
+
+    document.getElementById('additionalMenus').style.display = 'none';
+    document.getElementById('menu3').selectedIndex = 0;
+    document.getElementById('menu4').selectedIndex = 0;
+    document.getElementById('menu5').selectedIndex = 0;
+    document.getElementById('input6').value = '';
+    document.getElementById('input7').value = '';
+    document.getElementById('input8').value = '';
 
     // If needed, also reinitialize the menus (depends on your application logic)
     // initializeMenus();
