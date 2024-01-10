@@ -65,6 +65,7 @@
     //        text-align: center;
     //    }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 
 </head>
 
@@ -99,6 +100,8 @@
     <input type="text" id="discountInput" placeholder="Enter discount" />
     <button onclick="calculateDiscountedPrice()">Get the discounted price</button>
     <div id="discountedPrice"></div>
+    <p> </p>
+    <button onclick="generatePDF()">Generate PDF</button>
     <p> </p>
     <p> _______________________________________________ </p>
     <button onclick="resetForm()">Clear all selection and price</button>
@@ -348,6 +351,55 @@ function initializeMenus() {
         .then(data => {
             // ... (existing code to populate menus)
         });
+}
+
+function generatePDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFontSize(16);
+    doc.text("New Art Blinds", 10, 10);
+    doc.text("Quotation", 160, 10);
+
+    doc.setFontSize(10);
+    const headerLeft = "861 Denison St, Unit 101 Markham, ON L3R 3L6\n647-937-8888\nnewartblinds@gmail.com\nhttps://www.newartblinds.com";
+    doc.text(headerLeft, 10, 15);
+    
+    let responseContent = document.getElementById('response').innerText.replace(/Delete this item/g, '');
+    let totalPriceContent = document.getElementById('totalPrice').innerText;
+    let discountedPriceContent = document.getElementById('discountedPrice').innerText;
+
+    doc.setFontSize(12);
+    
+    let yOffset = 50;
+
+    yOffset = addTextToPDF(doc, "Price for each individual item:\n" + responseContent, 10, yOffset);
+    yOffset = addTextToPDF(doc, totalPriceContent, 10, yOffset);
+    addTextToPDF(doc, discountedPriceContent, 10, yOffset);
+
+    if (yOffset > 280) {
+        doc.addPage();
+        yOffset = 10;
+    }
+    doc.text("If you have any questions concerning this quotation, please contact New Art Blinds\nTHANK YOU FOR YOUR BUSINESS!", 10, yOffset+20);
+    
+    doc.save('generated.pdf');
+}
+
+function addTextToPDF(doc, text, x, initialY) {
+    let splitText = doc.splitTextToSize(text, 180); 
+    let yOffset = initialY;
+
+    for (let i = 0; i < splitText.length; i++) {
+        if (yOffset > 280) { 
+            doc.addPage();
+            yOffset = 10;
+        }
+        doc.text(splitText[i], x, yOffset);
+        yOffset += 4; 
+    }
+
+    return yOffset + 10; 
 }
 
         
